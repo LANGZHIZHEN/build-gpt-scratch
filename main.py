@@ -3,31 +3,10 @@ from models.GPTModel import GPTModel
 import tiktoken
 from datasets.dataloader import create_dataloader
 from utils import *
-
-def generate(model, idx, max_new_tokens, context_size,
-             temperature=1.0, top_k=None, eos_id=None):
-    for _ in range(max_new_tokens):
-        idx_cond = idx[:, -context_size:]
-        with torch.no_grad():
-            logits = model(idx_cond)
-        logits = logits[:, -1, :]
-        if top_k is not None:
-            top_logits, _ = torch.topk(logits, k=top_k)
-            min_val = top_logits[:, -1]
-            logits = torch.where(logits < min_val, 
-                                 torch.tensor(-float('Inf'), device=logits.device), 
-                                 logits)
-        if temperature > 0:
-            logits = logits / temperature
-            probs = torch.softmax(logits, dim=-1)
-            idx_next = torch.multinomial(probs, num_samples=1)
-        else:
-            idx_next = torch.softmax(logits, dim=-1)
-        if idx_next == eos_id:
-            break
-        idx = torch.cat((idx, idx_next), dim=-1)
-    return idx
-
+import tensorflow as tf
+import json
+import os
+from gpt_download import load_gpt2_params_from_tf_ckpt
 def evaluate_model(model, train_loader, val_loader, device, eval_iter):
     model.eval()
     with torch.no_grad():
@@ -77,13 +56,12 @@ GPT_CONFIG_124M = {
     "num_layers": 12,
     "num_heads": 12,
     "emb_dim": 768,
-    "context_length": 256,
+    "context_length": 1024,
     "dropout": 0.1,
     "num_classes": 2,
-    'bias':False
+    'bias':True
 }
-
-if __name__ == "__main__":
+def train():
     file_path = "the-verdict.txt"
     with open(file_path, "r", encoding="utf-8") as f:
         text = f.read()
@@ -108,3 +86,29 @@ if __name__ == "__main__":
         'optimizer_state_dict': optimizer.state_dict(),
     },
     "model_checkpoint.pth")
+
+def predict():
+    tokenizer = tiktoken.get_encoding("gpt2")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model_dir = "../models/GPT2-124M/124M"
+    tf_ckpt_path = tf.train.latest_checkpoint(model_dir)
+    settings = json.load(open(os.path.join(model_dir, "hparams.json"), "r", encoding="utf-8"))
+    params = load_gpt2_params_from_tf_ckpt(tf_ckpt_path, settings)
+    model =  GPTModel(GPT_CONFIG_124M)
+    model.eval()
+    load_weights_into_gpt(model, params)
+    model.to(device)
+
+    token_ids = generate(
+    model=model,
+    idx=text_to_token_ids("More pain, More gain", tokenizer).to(device),
+    max_new_tokens=50,
+    context_size=GPT_CONFIG_124M['context_length'],
+    top_k=25,
+    temperature=1.3
+    )
+    print(token_ids_to_text(token_ids, tokenizer))
+
+if __name__ == "__main__":
+    predict()
+    
