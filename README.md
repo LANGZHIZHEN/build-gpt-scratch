@@ -1,3 +1,8 @@
+## ch5.训练GPT 
+1.使用CrossEntroyLoss函数，AdamW优化器进行训练 <br>
+2.编写计算loader损失和batch损失函数，分别用于评估和训练<br>
+3.编写整个训练过程<br>
+4.设计温度解码策略和top-k选择<br>
 ## ch4.搭建GPT的模型
 1.编写层归一化模型，注意分母添加eps防止NaN <br>
 2.编写前馈神经网络，用GELU代替RELU <br>
