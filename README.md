@@ -1,11 +1,11 @@
 # 一周目探索
 ## ch6.分类任务微调
 1.准备数据集，保存成csv格式（主要是分好input和target） <br>
-2.编写Dataset类，将text转为词元id，包括每个item的长度保证统一，不足则添加<|endoftext|>；编写Dataloader类
-3.确定微调的参数层，这里只修改了最后一个transformer块和层归一化，然后修改了输出的二分类
-4.编写了交叉熵损失函数以及训练流程
-5.编写评估函数，计算loss和accuracy
-6.可视化训练loss和acc
+2.编写Dataset类，将text转为词元id，包括每个item的长度保证统一，不足则添加<|endoftext|>；编写Dataloader类<br>
+3.确定微调的参数层，这里只修改了最后一个transformer块和层归一化，然后修改了输出的二分类<br>
+4.编写了交叉熵损失函数以及训练流程<br>
+5.编写评估函数，计算loss和accuracy<br>
+6.可视化训练loss和acc<br>
 ## ch5.训练GPT 
 1.使用CrossEntroyLoss函数，AdamW优化器进行训练 <br>
 2.编写计算loader损失和batch损失函数，分别用于评估和训练<br>
