@@ -7,6 +7,7 @@ import tensorflow as tf
 import json
 import os
 from gpt_download import load_gpt2_params_from_tf_ckpt
+
 def evaluate_model(model, train_loader, val_loader, device, eval_iter):
     model.eval()
     with torch.no_grad():
@@ -100,13 +101,13 @@ def predict():
     model.to(device)
 
     token_ids = generate(
-    model=model,
-    idx=text_to_token_ids("More pain, More gain", tokenizer).to(device),
-    max_new_tokens=50,
-    context_size=GPT_CONFIG_124M['context_length'],
-    top_k=25,
-    temperature=1.3
-    )
+        model=model,
+        idx=text_to_token_ids("More pain, More gain", tokenizer).to(device),
+        max_new_tokens=50,
+        context_size=GPT_CONFIG_124M['context_length'],
+        top_k=25,
+        temperature=1.3
+        )
     print(token_ids_to_text(token_ids, tokenizer))
 
 if __name__ == "__main__":
