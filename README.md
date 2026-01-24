@@ -1,6 +1,8 @@
 # 一周目探索
 ## ch7.指令任务微调
 1.准备数据集，编写Dataset，collate函数，loader <br>
+2.加载预训练权重gpt2-medium
+3.训练后，下载ollama，部署qwen3-4B对test_data进行评估打分（本地进行）
 ## ch6.分类任务微调
 1.准备数据集，保存成csv格式（主要是分好input和target） <br>
 2.编写Dataset类，将text转为词元id，包括每个item的长度保证统一，不足则添加<|endoftext|>；编写Dataloader类<br>
