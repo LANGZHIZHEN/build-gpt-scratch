@@ -1,14 +1,5 @@
 import torch
 import numpy as np
-def calc_loss(input_batch, target_batch, model, device):
-    input_batch = input_batch.to(device)
-    target_batch = target_batch.to(device)
-    logits = model(input_batch)
-    loss = torch.nn.functional.cross_entropy(
-        logits.flatten(0, 1),
-        target_batch.flatten()
-    )
-    return loss
 
 def text_to_token_ids(text, tokenizer):
     encoded = tokenizer.encode(text, allowed_special={'<|endoftext|>'})
@@ -108,27 +99,10 @@ def generate(model, idx, max_new_tokens, context_size,
         idx = torch.cat((idx, idx_next), dim=-1)
     return idx
 
-def train_model_simple(model, train_loader, val_loader, optimizer, device, 
-                       epochs, eval_freq, eval_iter, start_context, tokenizer):
-    train_losses, val_losses, track_tokens_seen = [], [], []
-    tokens_seen, step = 0, -1
-    for epoch in range(epochs):
-        model.train()
-        for inputs, targets in train_loader:
-            optimizer.zero_grad()
-            loss = calc_loss(inputs, targets, model, device)
-            loss.backward()
-            optimizer.step()
-            tokens_seen += inputs.numel()
-            step += 1
-
-            if step % eval_freq == 0:
-                model.eval()
-                with torch.no_grad():
-                    train_loss, val_loss = evaluate_model(model, train_loader, val_loader, device, eval_iter)
-                    train_losses.append(train_loss)
-                    val_losses.append(val_loss)
-                    track_tokens_seen.append(tokens_seen)
-                    print(f"Epoch: {epoch}, Step: {step}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
-        generate_and_print_sample(model, tokenizer, start_context, device)
-    return train_losses, val_losses, track_tokens_seen, model
+def evaluate_model(calc_loss_loader, model, train_loader, val_loader, device, eval_iter):
+    model.eval()
+    with torch.no_grad():
+        train_loss = calc_loss_loader(train_loader, model, device, eval_iter)
+        valid_loss = calc_loss_loader(val_loader, model, device, eval_iter)
+    model.train()
+    return train_loss, valid_loss
