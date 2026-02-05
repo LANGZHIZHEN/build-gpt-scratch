@@ -13,6 +13,7 @@ def calc_loss(input_batch, target_batch, model, device):
 def calc_loss_loader(data_loader, model, device, num_batches=None):
     total_loss = 0
     if len(data_loader) == 0:
+        print("Warning: data_loader is empty.")
         return float('nan')
     elif num_batches is None:
         num_batches = len(data_loader)
