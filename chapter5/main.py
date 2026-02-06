@@ -37,7 +37,7 @@ def train():
     model.to(device)
     optimizer = torch.optim.AdamW(model.parameters(), weight_decay=0.1)
     epoch = 50
-    # train_losses, val_losses, tokens_seen = train_model(model, train_loader, val_loader, optimizer, device, epoch,
+    # train_losses, val_losses, tokens_seen = train_model_simple(model, train_loader, val_loader, optimizer, device, epoch,
     #                                                         eval_freq=5, eval_iter=1, start_context="Every effort moves you", tokenizer=tokenizer,
     #                                                         warmup_steps=0.2 * epoch * len(train_loader), init_lr=1e-5, min_lr=1e-5)
     train_losses, val_losses, tokens_seen = train_model_simple(model, train_loader, val_loader, optimizer, device, epoch,

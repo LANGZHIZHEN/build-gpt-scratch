@@ -1,6 +1,7 @@
 # 二周目探索
 1.新增chapter2的数据集读取
 2.chaper5.train新增学习率预热、余弦衰减和梯度裁剪
+3.新增LoRA微调第六章分类任务
 # 一周目探索
 ## ch7.指令任务微调
 1.准备数据集，编写Dataset，collate函数，loader <br>
